@@ -22,7 +22,7 @@ impl Entity for Player {
         todo!()
     }
 
-    fn process(&mut self, world: &World, xy: (usize, usize)) {
+    fn process(&mut self, world: &mut World, xy: (usize, usize)) {
         todo!()
     }
 
