@@ -1,14 +1,15 @@
-use std::collections::HashMap;
-use rand::RngExt;
-use crate::entity::Entity;
+use crate::entity::{Entity, EntityId};
 use crate::world::World;
+use rand::{Rng, RngExt};
+use std::collections::HashMap;
 
 pub struct Food {
     pos: (usize, usize),
     eaten: bool,
     growth_stage: i8,
     mold_level: f32,
-    family: HashMap<(usize, usize), Food>,
+    family: HashMap<(usize, usize), EntityId>,
+    id: EntityId
 }
 
 impl Food {
@@ -18,7 +19,8 @@ impl Food {
             eaten: false,
             growth_stage: 0,
             mold_level: 0.0,
-            family: HashMap::new()
+            family: HashMap::new(),
+            id: (rand::rng().next_u32() as i32) as EntityId
         }
     }
 
@@ -29,7 +31,9 @@ impl Food {
             (self.pos.0 as isize + dx).max(0) as usize,
             (self.pos.1 as isize + dy).max(0) as usize
         );
-        self.family.insert(new_pos, Self::new());
+        let entity = Box::from(Self::new());
+        self.family.insert(new_pos, entity.id);
+        world.spawn_entity(entity, new_pos);
     }
 
     fn die(&mut self) {
@@ -39,14 +43,20 @@ impl Food {
 
 impl Entity for Food {
     fn pos(&self) -> (usize, usize) {
-        todo!()
+        self.pos
     }
 
     fn set_pos(&mut self, pos: (usize, usize)) -> (usize, usize) {
-        todo!()
+        let old_pos = self.pos.clone();
+        self.pos = pos;
+        old_pos
     }
 
     fn process(&mut self, world: &World, xy: (usize, usize)) {
         todo!()
+    }
+
+    fn get_id(&self) -> EntityId {
+        self.id
     }
 }

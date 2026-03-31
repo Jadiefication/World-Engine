@@ -1,9 +1,10 @@
-use crate::entity::Entity;
+use crate::entity::{Entity, EntityId};
 use crate::world::World;
 
 pub struct Player {
     pos: (usize, usize),
-    food_level: f32
+    food_level: f32,
+    id: EntityId
 }
 
 impl Player {
@@ -22,6 +23,10 @@ impl Entity for Player {
     }
 
     fn process(&mut self, world: &World, xy: (usize, usize)) {
+        todo!()
+    }
+
+    fn get_id(&self) -> EntityId {
         todo!()
     }
 }

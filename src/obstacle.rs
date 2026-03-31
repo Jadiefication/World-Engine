@@ -1,11 +1,12 @@
 use std::time::Duration;
-use crate::entity::Entity;
+use crate::entity::{Entity, EntityId};
 use crate::world::World;
 
 pub struct Obstacle {
     pos: (usize, usize),
     durability: f32,
-    duration: Option<Duration>
+    duration: Option<Duration>,
+    id: EntityId
 }
 
 impl Entity for Obstacle {
@@ -19,5 +20,9 @@ impl Entity for Obstacle {
 
     fn process(&mut self, world: &World, xy: (usize, usize)) {
         todo!()
+    }
+
+    fn get_id(&self) -> EntityId {
+todo!()
     }
 }

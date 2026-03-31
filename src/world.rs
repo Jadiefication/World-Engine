@@ -8,11 +8,11 @@ pub struct World {
 }
 
 impl World {
-    fn new() -> World {
+    pub fn new() -> World {
         World { entities: vec![], size: (256, 256), entity_queue: vec![] }
     }
 
-    fn from(entities: Vec<Vec<RefCell<Box<dyn Entity>>>>, size: (u32, u32)) -> World {
+    pub fn from(entities: Vec<Vec<RefCell<Box<dyn Entity>>>>, size: (u32, u32)) -> World {
         World { entities, size, entity_queue: vec![] }
     }
 
@@ -27,7 +27,7 @@ impl World {
         }
     }
 
-    fn spawn_entity(&mut self, entity: Box<dyn Entity>, pos: (usize, usize)) {
+    pub fn spawn_entity(&mut self, entity: Box<dyn Entity>, pos: (usize, usize)) {
         self.entity_queue.push((entity, pos))
     }
 }
