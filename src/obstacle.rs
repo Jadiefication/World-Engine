@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::time::Duration;
 use crate::entity::{Entity, EntityId};
 use crate::world::World;
@@ -14,15 +15,23 @@ impl Entity for Obstacle {
         todo!()
     }
 
-    fn set_pos(&mut self, pos: (usize, usize)) -> (usize, usize) {
+    fn set_pos(&mut self, pos: (usize, usize), world: &mut World) -> (usize, usize) {
         todo!()
     }
 
-    fn process(&mut self, world: &mut World, xy: (usize, usize)) {
+    fn process(&mut self, world: &mut World) {
         todo!()
     }
 
     fn get_id(&self) -> EntityId {
+        todo!()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        todo!()
+    }
+
+    fn as_any_mut(&mut self) -> &mut dyn Any {
         todo!()
     }
 }
