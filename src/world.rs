@@ -1,6 +1,7 @@
 use crate::entity::{Entity, EntityId, Pos};
 use std::collections::HashMap;
 use std::time::Duration;
+use crate::event::event::Event;
 
 pub struct World {
     entities: HashMap<EntityId, Box<dyn Entity>>,
@@ -20,12 +21,12 @@ impl World {
         World { entities, entity_positions, size, entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
-    fn process(&mut self) {
+    pub fn process(&mut self, event: Event) {
         let mut entities = std::mem::take(&mut self.entities);
 
         for entity in &mut entities {
             self.entity_positions.iter().find(|pos| { *pos.1 == *entity.0 }).unwrap();
-            entity.1.process(self)
+            entity.1.process(self, &event)
         }
         self.entities = entities;
         for (entity, pos) in self.entity_queue.drain(..) {
@@ -46,8 +47,16 @@ impl World {
         self.entities.get(&id)
     }
 
-    pub(crate) fn find_by_id_mut(&mut self, id: EntityId) -> Option<&mut Box<dyn Entity>> {
+    pub fn find_by_id_mut(&mut self, id: EntityId) -> Option<&mut Box<dyn Entity>> {
         self.entities.get_mut(&id)
+    }
+
+    pub fn find_by_pos(&self, pos: Pos) -> Option<&Box<dyn Entity>> {
+        self.find_by_id(self.entity_positions[&pos])
+    }
+
+    pub fn find_by_pos_mut(&mut self, pos: Pos) -> Option<&mut Box<dyn Entity>> {
+        self.find_by_id_mut(self.entity_positions[&pos])
     }
 
     pub fn mark_removed_entity(&mut self, id: EntityId) {

@@ -3,6 +3,7 @@ use crate::entity::{Entity, EntityId, Pos};
 use crate::world::World;
 use rand::{Rng, RngExt};
 use std::collections::HashMap;
+use crate::event::event::Event;
 
 pub struct Food {
     pos: Pos,
@@ -78,7 +79,7 @@ impl Food {
 }
 
 impl Entity for Food {
-    fn process(&mut self, world: &mut World) {
+    fn process(&mut self, world: &mut World, event: &Event) {
         if self.growth_stage == self.max_growth {
             self.mold_level = 2.0_f32.powf((0.56 * world.time).powf(0.1 * world.time));
             let rand = rand::rng().next_u32();
