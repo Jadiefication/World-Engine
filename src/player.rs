@@ -15,13 +15,6 @@ impl Player {
 }
 
 impl Entity for Player {
-    fn pos(&self) -> (usize, usize) {
-        todo!()
-    }
-
-    fn set_pos(&mut self, pos: (usize, usize), world: &mut World) -> (usize, usize) {
-        todo!()
-    }
 
     fn process(&mut self, world: &mut World) {
         todo!()

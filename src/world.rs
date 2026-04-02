@@ -1,21 +1,22 @@
-use crate::entity::{Entity, EntityId};
+use crate::entity::{Entity, EntityId, Pos};
 use std::collections::HashMap;
 
 pub struct World {
     entities: HashMap<EntityId, Box<dyn Entity>>,
-    pub entity_positions: HashMap<(usize, usize), EntityId>,
+    pub entity_positions: HashMap<Pos, EntityId>,
     size: (u32, u32),
     entity_queue: Vec<(Box<dyn Entity>, (usize, usize))>,
-    pub time: f32
+    pub time: f32,
+    remove_entity_queue: Vec<EntityId>
 }
 
 impl World {
     pub fn new() -> World {
-        World { entities: HashMap::new(), entity_positions: HashMap::new(), size: (256, 256), entity_queue: vec![], time: 0.0 }
+        World { entities: HashMap::new(), entity_positions: HashMap::new(), size: (256, 256), entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
-    pub fn from(entities: HashMap<EntityId, Box<dyn Entity>>, entity_positions: HashMap<(usize, usize), EntityId>, size: (u32, u32)) -> World {
-        World { entities, entity_positions, size, entity_queue: vec![], time: 0.0 }
+    pub fn from(entities: HashMap<EntityId, Box<dyn Entity>>, entity_positions: HashMap<Pos, EntityId>, size: (u32, u32)) -> World {
+        World { entities, entity_positions, size, entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
     fn process(&mut self) {
@@ -29,6 +30,10 @@ impl World {
         for (entity, pos) in self.entity_queue.drain(..) {
             self.entity_positions.insert(pos, entity.get_id());
             self.entities.insert(entity.get_id(), entity);
+        }
+        for id in self.remove_entity_queue.drain(..) {
+            self.entities.remove(&id);
+            
         }
     }
 
@@ -44,9 +49,13 @@ impl World {
         self.entities.get_mut(&id)
     }
 
-    pub fn remove_entity(&mut self, id: EntityId) -> Box<dyn Entity> {
-        let old_entity = self.entities.remove(&id).unwrap();
-        self.entity_positions.remove(&old_entity.pos());
-        old_entity
+    pub fn mark_removed_entity(&mut self, id: EntityId) {
+        self.remove_entity_queue.push(id)
+    }
+    
+    pub fn update_pos(&mut self, id: EntityId, new_pos: Pos) {
+        self.entity_positions.iter_mut().find(|it| {
+            *it.1 == id
+        }).unwrap().0 = &new_pos;
     }
 }
