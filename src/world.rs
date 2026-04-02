@@ -7,7 +7,7 @@ use crate::player::Player;
 pub struct World {
     entities: HashMap<EntityId, Box<dyn Entity>>,
     pub entity_positions: HashMap<Pos, EntityId>,
-    size: (u32, u32),
+    pub size: (usize, usize),
     entity_queue: Vec<(Box<dyn Entity>, (usize, usize))>,
     pub time: f32,
     remove_entity_queue: Vec<EntityId>
@@ -18,7 +18,7 @@ impl World {
         World { entities: HashMap::new(), entity_positions: HashMap::new(), size: (256, 256), entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
-    pub fn from(entities: HashMap<EntityId, Box<dyn Entity>>, entity_positions: HashMap<Pos, EntityId>, size: (u32, u32)) -> World {
+    pub fn from(entities: HashMap<EntityId, Box<dyn Entity>>, entity_positions: HashMap<Pos, EntityId>, size: (usize, usize)) -> World {
         World { entities, entity_positions, size, entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 

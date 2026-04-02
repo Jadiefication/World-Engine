@@ -41,7 +41,7 @@ impl Obstacle {
 }
 
 impl Entity for Obstacle {
-    fn process(&mut self, world: &mut World, event: &Event) {
+    fn process(&mut self, world: &mut World, _event: &Event) {
         if self.duration.is_some() {
             if let Some(new_duration) = self.duration.unwrap()
                 .checked_sub(Duration::from_ticks(1)) {
