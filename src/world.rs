@@ -2,6 +2,7 @@ use crate::entity::{Entity, EntityId, Pos};
 use std::collections::HashMap;
 use std::time::Duration;
 use crate::event::event::Event;
+use crate::player::Player;
 
 pub struct World {
     entities: HashMap<EntityId, Box<dyn Entity>>,
@@ -69,6 +70,35 @@ impl World {
         self.entity_positions.iter_mut().find(|it| {
             *it.1 == id
         }).unwrap().0 = &new_pos;
+    }
+
+    pub fn get_players(&self) -> Vec<&Player> {
+        self.entities
+            .values()
+            .filter_map(|it| {
+                it.as_any().downcast_ref::<Player>()
+            })
+            .collect()
+    }
+
+    pub fn get_players_mut(&mut self) -> Vec<&mut Player> {
+        self.entities
+            .values_mut()
+            .filter_map(|it| {
+                it.as_any_mut().downcast_mut::<Player>()
+            })
+            .collect()
+    }
+
+    pub fn find_player_at_pos_mut(&mut self, pos: Pos) -> Option<&mut Player> {
+        self.entities.values_mut().find_map(|it| {
+            let player = it.as_any_mut().downcast_mut::<Player>()?;
+            if player.next_pos() == pos {
+                Some(player)
+            } else {
+                None
+            }
+        })
     }
 }
 

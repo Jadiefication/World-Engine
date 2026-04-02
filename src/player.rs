@@ -51,9 +51,13 @@ impl Player {
             } else {
                 false
             }
-        } else { 
+        } else {
             false
         }
+    }
+    
+    pub fn eat(&mut self, eat_amount: f32) {
+        self.food_level += eat_amount;
     }
 }
 

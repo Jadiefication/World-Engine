@@ -4,6 +4,7 @@ use crate::world::World;
 use rand::{Rng, RngExt};
 use std::collections::HashMap;
 use crate::event::event::Event;
+use crate::event::event::Event::Eat;
 
 pub struct Food {
     pos: Pos,
@@ -80,20 +81,27 @@ impl Food {
 
 impl Entity for Food {
     fn process(&mut self, world: &mut World, event: &Event) {
-        if self.growth_stage == self.max_growth {
-            self.mold_level = 2.0_f32.powf((0.56 * world.time).powf(0.1 * world.time));
-            let rand = rand::rng().next_u32();
-            if rand % 4 == 0 {
-                self.grow(world);
-            }
-            if rand % 11 == 0 {
-                self.die(world)
+        if matches!(*event, Eat) {
+            if let Some(player) = world.find_player_at_pos_mut(self.pos) {
+                player.eat(rand::rng().random());
+                self.growth_stage = 0;
             }
         } else {
-            self.growth_stage += 1;
-        }
-        for pos in self.removed_entities.drain(..) {
-            self.family.remove(&pos);
+            if self.growth_stage == self.max_growth {
+                self.mold_level = 2.0_f32.powf((0.56 * world.time).powf(0.1 * world.time));
+                let rand = rand::rng().next_u32();
+                if rand % 4 == 0 {
+                    self.grow(world);
+                }
+                if rand % 11 == 0 {
+                    self.die(world)
+                }
+            } else {
+                self.growth_stage += 1;
+            }
+            for pos in self.removed_entities.drain(..) {
+                self.family.remove(&pos);
+            }
         }
     }
 
