@@ -6,8 +6,8 @@ use std::collections::HashMap;
 
 pub struct Food {
     pos: Pos,
-    growth_stage: i8,
-    max_growth: i8,
+    growth_stage: u8,
+    max_growth: u8,
     mold_level: f32,
     family: HashMap<Pos, EntityId>,
     id: EntityId,
@@ -15,12 +15,29 @@ pub struct Food {
 }
 
 impl Food {
-    fn new() -> Food {
+    pub fn new() -> Food {
         Food {
             pos: (0, 0),
             growth_stage: 0,
             max_growth: 5,
             mold_level: 0.0,
+            family: HashMap::new(),
+            id: (rand::rng().next_u32() as i32) as EntityId,
+            removed_entities: vec![]
+        }
+    }
+
+    pub fn from(
+        pos: Pos,
+        growth_stage: u8,
+        max_growth: u8,
+        mold_level: f32
+    ) -> Food {
+        Food {
+            pos,
+            growth_stage,
+            max_growth,
+            mold_level,
             family: HashMap::new(),
             id: (rand::rng().next_u32() as i32) as EntityId,
             removed_entities: vec![]
@@ -54,7 +71,7 @@ impl Food {
         }
         world.mark_removed_entity(self.id);
     }
-    
+
     fn mark_removed_member(&mut self, pos: &Pos) {
         self.removed_entities.push(*pos)
     }

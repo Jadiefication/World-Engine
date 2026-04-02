@@ -1,5 +1,6 @@
 use crate::entity::{Entity, EntityId, Pos};
 use std::collections::HashMap;
+use std::time::Duration;
 
 pub struct World {
     entities: HashMap<EntityId, Box<dyn Entity>>,
@@ -33,7 +34,7 @@ impl World {
         }
         for id in self.remove_entity_queue.drain(..) {
             self.entities.remove(&id);
-            
+
         }
     }
 
@@ -50,12 +51,24 @@ impl World {
     }
 
     pub fn mark_removed_entity(&mut self, id: EntityId) {
-        self.remove_entity_queue.push(id)
+        if !self.remove_entity_queue.contains(&id) {
+            self.remove_entity_queue.push(id);
+        }
     }
-    
+
     pub fn update_pos(&mut self, id: EntityId, new_pos: Pos) {
         self.entity_positions.iter_mut().find(|it| {
             *it.1 == id
         }).unwrap().0 = &new_pos;
+    }
+}
+
+pub trait Ticks {
+    fn from_ticks(ticks: u64) -> Duration;
+}
+
+impl Ticks for Duration {
+    fn from_ticks(ticks: u64) -> Duration {
+        Duration::from_secs(ticks * 20)
     }
 }
