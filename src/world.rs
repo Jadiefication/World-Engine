@@ -5,32 +5,44 @@ use crate::player::Player;
 
 pub struct World {
     entities: HashMap<EntityId, Box<dyn Entity>>,
-    pub entity_positions: HashMap<Pos, EntityId>,
     pub size: (usize, usize),
     entity_queue: Vec<(Box<dyn Entity>, (usize, usize))>,
     pub time: f32,
     remove_entity_queue: Vec<EntityId>
 }
 
+pub struct WorldContext<'a> {
+    entities: &'a HashMap<EntityId, Box<dyn Entity>>,
+    size: (usize, usize),
+    time: f32
+}
+
 impl World {
     pub fn new() -> World {
-        World { entities: HashMap::new(), entity_positions: HashMap::new(), size: (256, 256), entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
+        World { entities: HashMap::new(), size: (256, 256), entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
-    pub fn from(entities: HashMap<EntityId, Box<dyn Entity>>, entity_positions: HashMap<Pos, EntityId>, size: (usize, usize)) -> World {
-        World { entities, entity_positions, size, entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
+    pub fn from(entities: HashMap<EntityId, Box<dyn Entity>>, size: (usize, usize)) -> World {
+        World { entities, size, entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
     pub fn process(&mut self) {
-        let mut entities = std::mem::take(&mut self.entities);
+        let ids: Vec<_> = self.entities.keys().cloned().collect();
 
-        for entity in &mut entities {
-            self.entity_positions.iter().find(|pos| { *pos.1 == *entity.0 }).unwrap();
-            entity.1.process(self)
+        for id in ids {
+            let mut entity = self.entities.remove(&id).unwrap();
+
+            let mut view = WorldContext {
+                entities: &self.entities,
+                size: self.size,
+                time: self.time,
+            };
+
+            entity.process(&mut view);
+
+            self.entities.insert(id, entity);
         }
-        self.entities = entities;
         for (entity, pos) in self.entity_queue.drain(..) {
-            self.entity_positions.insert(pos, entity.get_id());
             self.entities.insert(entity.get_id(), entity);
         }
         for id in self.remove_entity_queue.drain(..) {
@@ -52,41 +64,17 @@ impl World {
     }
 
     pub fn find_by_pos(&self, pos: Pos) -> Option<&Box<dyn Entity>> {
-        self.find_by_id(self.entity_positions[&pos])
+        self.entities.values().find(|it| it.get_pos() == pos)
     }
 
     pub fn find_by_pos_mut(&mut self, pos: Pos) -> Option<&mut Box<dyn Entity>> {
-        self.find_by_id_mut(self.entity_positions[&pos])
+        self.entities.values_mut().find(|it| it.get_pos() == pos)
     }
 
     pub fn mark_removed_entity(&mut self, id: EntityId) {
         if !self.remove_entity_queue.contains(&id) {
             self.remove_entity_queue.push(id);
         }
-    }
-
-    pub fn update_pos(&mut self, id: EntityId, new_pos: Pos) {
-        self.entity_positions.iter_mut().find(|it| {
-            *it.1 == id
-        }).unwrap().0 = &new_pos;
-    }
-
-    pub fn get_players(&self) -> Vec<&Player> {
-        self.entities
-            .values()
-            .filter_map(|it| {
-                it.as_any().downcast_ref::<Player>()
-            })
-            .collect()
-    }
-
-    pub fn get_players_mut(&mut self) -> Vec<&mut Player> {
-        self.entities
-            .values_mut()
-            .filter_map(|it| {
-                it.as_any_mut().downcast_mut::<Player>()
-            })
-            .collect()
     }
 
     pub fn find_player_at_pos_mut(&mut self, pos: Pos) -> Option<&mut Player> {
