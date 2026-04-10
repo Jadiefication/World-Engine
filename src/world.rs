@@ -1,7 +1,6 @@
 use crate::entity::{Entity, EntityId, Pos};
 use std::collections::HashMap;
 use std::time::Duration;
-use crate::event::event::Event;
 use crate::player::Player;
 
 pub struct World {
@@ -22,12 +21,12 @@ impl World {
         World { entities, entity_positions, size, entity_queue: vec![], time: 0.0, remove_entity_queue: vec![] }
     }
 
-    pub fn process(&mut self, event: Event) {
+    pub fn process(&mut self) {
         let mut entities = std::mem::take(&mut self.entities);
 
         for entity in &mut entities {
             self.entity_positions.iter().find(|pos| { *pos.1 == *entity.0 }).unwrap();
-            entity.1.process(self, &event)
+            entity.1.process(self)
         }
         self.entities = entities;
         for (entity, pos) in self.entity_queue.drain(..) {

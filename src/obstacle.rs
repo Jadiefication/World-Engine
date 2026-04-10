@@ -2,7 +2,6 @@ use std::any::Any;
 use std::time::Duration;
 use rand::Rng;
 use crate::entity::{Entity, EntityId, Pos};
-use crate::event::event::Event;
 use crate::world::{Ticks, World};
 
 pub struct Obstacle {
@@ -41,7 +40,7 @@ impl Obstacle {
 }
 
 impl Entity for Obstacle {
-    fn process(&mut self, world: &mut World, _event: &Event) {
+    fn process(&mut self, world: &mut World) {
         if self.duration.is_some() {
             if let Some(new_duration) = self.duration.unwrap()
                 .checked_sub(Duration::from_ticks(1)) {

@@ -1,8 +1,6 @@
 use std::any::Any;
 use rand::Rng;
 use crate::entity::{Entity, EntityId, Pos};
-use crate::event::event::Event;
-use crate::food::Food;
 use crate::obstacle::Obstacle;
 use crate::world::World;
 
@@ -57,19 +55,6 @@ impl Player {
         }
     }
 
-    fn check_for_food(&self, world: &World) -> bool {
-        let next_pos = self.next_pos();
-        if let Some(entity) = world.find_by_pos(next_pos) {
-            if let Some(_) = entity.as_any().downcast_ref::<Food>() {
-                true
-            } else {
-                false
-            }
-        } else {
-            false
-        }
-    }
-
     fn check_for_collision(&self, world: &World) -> bool {
         let next_pos = self.next_pos();
         if let Some(entity) = world.find_by_pos(next_pos) {
@@ -101,32 +86,11 @@ impl Player {
 
 impl Entity for Player {
 
-    fn process(&mut self, world: &mut World, event: &Event) {
+    fn process(&mut self, world: &mut World) {
         self.food_level -= 1.0;
         if self.food_level.max(0.0) == 0.0 {
             self.food_level = 0.0;
             self.health -= 1.0;
-        }
-        if matches!(event, Event::Movement(_)) {
-            match event {
-                Event::Movement(Direction::Up) => {
-                    self.direction = Direction::Up;
-                    self.update_pos(world);
-                }
-                Event::Movement(Direction::Down) => {
-                    self.direction = Direction::Down;
-                    self.update_pos(world);
-                }
-                Event::Movement(Direction::Left) => {
-                    self.direction = Direction::Left;
-                    self.update_pos(world);
-                }
-                Event::Movement(Direction::Right) => {
-                    self.direction = Direction::Right;
-                    self.update_pos(world);
-                }
-                _ => {}
-            }
         }
     }
 
