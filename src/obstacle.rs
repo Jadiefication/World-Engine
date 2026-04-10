@@ -15,7 +15,7 @@ impl Obstacle {
     pub fn new() -> Obstacle {
         Obstacle {
             pos: (0, 0),
-            id: (rand::rng().next_u32() as i32) as EntityId
+            id: rand::rng().next_u32() as EntityId
         }
     }
 
@@ -23,7 +23,7 @@ impl Obstacle {
         pos: Pos) -> Obstacle {
         Obstacle {
             pos,
-            id: (rand::rng().next_u32() as i32) as EntityId
+            id: rand::rng().next_u32() as EntityId
         }
     }
 }

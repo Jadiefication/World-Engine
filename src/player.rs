@@ -24,20 +24,17 @@ impl Player {
     pub fn new() -> Player {
         Player {
             pos: (0, 0),
-            id: (rand::rng().next_u32() as i32) as EntityId,
+            id: rand::rng().next_u32() as EntityId,
             direction: Direction::Up,
         }
     }
 
     pub fn from(
         pos: Pos,
-        food_level: f32,
-        direction: Direction,
-        health: f32
-    ) -> Player {
+        direction: Direction) -> Player {
         Player {
             pos,
-            id: (rand::rng().next_u32() as i32) as EntityId,
+            id: rand::rng().next_u32() as EntityId,
             direction,
         }
     }

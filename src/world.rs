@@ -76,17 +76,6 @@ impl World {
             self.remove_entity_queue.push(id);
         }
     }
-
-    pub fn find_player_at_pos_mut(&mut self, pos: Pos) -> Option<&mut Player> {
-        self.entities.values_mut().find_map(|it| {
-            let player = it.as_any_mut().downcast_mut::<Player>()?;
-            if player.next_pos() == pos {
-                Some(player)
-            } else {
-                None
-            }
-        })
-    }
 }
 
 pub trait Ticks {
